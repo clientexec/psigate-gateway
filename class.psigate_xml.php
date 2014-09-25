@@ -68,7 +68,7 @@ class PsiGatePayment {
     var $myEmail;
     var $myComments;
     var $myCustomerIP;
-    
+
     // Added by Mike Mallinson - April 10, 2006
     var $useLibCurl = true;
     var $pathToCurl = "";
@@ -444,13 +444,13 @@ class PsiGatePayment {
                 "<Subtotal>".htmlentities( $this->mySubtotal )."</Subtotal>".
                 "<PaymentType>".htmlentities( $this->myPaymentType )."</PaymentType>".
                 "<CardAction>".htmlentities( $this->myCardAction )."</CardAction>";
-        
+
         if(in_array(htmlentities( $this->myCardAction ), array(3, 9))){
             $xmlRequest .= "<TransRefNumber>".htmlentities( $this->myTrxnTransRefNumber )."</TransRefNumber>";
         }else{
             $xmlRequest .= "<CardNumber>".htmlentities( $this->myCardNumber )."</CardNumber>";
         }
-        
+
         $xmlRequest .= "<CardExpMonth>".htmlentities( $this->myCardExpMonth )."</CardExpMonth>".
                 "<CardExpYear>".htmlentities( $this->myCardExpYear )."</CardExpYear>".
                 "<CardIDCode>".htmlentities( $this->myCardIDCode )."</CardIDCode>".
@@ -479,7 +479,7 @@ class PsiGatePayment {
                 "<Comments>".htmlentities( $this->myComments )."</Comments>".
                 "<CustomerIP>".htmlentities( $this->myCustomerIP )."</CustomerIP>".
         "</Order>";
-        
+
         $xmlResponse = "";
         // Added ability to use command line curl - Mike Mallinson
         if ($this->useLibCurl) {
@@ -491,7 +491,8 @@ class PsiGatePayment {
             curl_setopt( $ch, CURLOPT_TIMEOUT, 240 );
             curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 0 );
             curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
-            curl_setopt( $ch, CURLOPT_SSLVERSION, 1);
+            curl_setopt($ch, CURLOPT_SSLVERSION, 3);
+            curl_setopt($ch, CURLOPT_SSL_CIPHER_LIST, 'SSLv3');
             $xmlResponse = curl_exec( $ch );
             // Check whether the curl_exec worked.
             if( curl_errno( $ch ) != CURLE_OK ) {
@@ -506,7 +507,7 @@ class PsiGatePayment {
             exec("$this->pathToCurl -d \"$xmlRequest\" $this->myGatewayURL", $xmlResponse);
             $xmlResponse = $xmlResponse[0];
         }
-        
+
         if (!$this->myError) {
             // It worked, so setup an XML parser for the result.
             $this->parser = xml_parser_create();
