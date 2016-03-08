@@ -488,12 +488,13 @@ class PsiGatePayment {
             curl_setopt( $ch, CURLOPT_POST, 1 );
             curl_setopt( $ch, CURLOPT_POSTFIELDS, $xmlRequest );
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-            curl_setopt( $ch, CURLOPT_TIMEOUT, 240 );
+            curl_setopt( $ch, CURLOPT_TIMEOUT, 5 );
             curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 0 );
             curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
-            curl_setopt($ch, CURLOPT_SSLVERSION, 3);
-            curl_setopt($ch, CURLOPT_SSL_CIPHER_LIST, 'SSLv3');
+            //curl_setopt($ch, CURLOPT_SSLVERSION, 6);
+            //curl_setopt($ch, CURLOPT_SSL_CIPHER_LIST, 'TLSv1');
             $xmlResponse = curl_exec( $ch );
+
             // Check whether the curl_exec worked.
             if( curl_errno( $ch ) != CURLE_OK ) {
                 // A CURL Error occured. Return the error message and number. (offset so we can pick the error apart)

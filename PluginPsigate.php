@@ -125,9 +125,9 @@ class PluginPsigate extends GatewayPlugin
         $host = @gethostbyaddr($ip);
 
         if ($params["plugin_psigate_Demo Mode"]==0){
-            $psi->setGatewayURL('https://secure.psigate.com:7934/Messenger/XMLMessenger');
+            $psi->setGatewayURL('https://secure.psigate.com:27934/Messenger/XMLMessenger');
         } else {
-            $psi->setGatewayURL('https://dev.psigate.com:7989/Messenger/XMLMessenger');
+            $psi->setGatewayURL('https://dev.psigate.com:27934/Messenger/XMLMessenger');
         }
 
         if ($params["pathCurl"]=="") {
@@ -197,9 +197,9 @@ class PluginPsigate extends GatewayPlugin
         $host = @gethostbyaddr($ip);
 
         if ($params["plugin_psigate_Demo Mode"]==0){
-            $psi->setGatewayURL('https://secure.psigate.com:7934/Messenger/XMLMessenger');
+            $psi->setGatewayURL('https://secure.psigate.com:27934/Messenger/XMLMessenger');
         } else {
-            $psi->setGatewayURL('https://dev.psigate.com:7989/Messenger/XMLMessenger');
+            $psi->setGatewayURL('https://dev.psigate.com:27934/Messenger/XMLMessenger');
         }
 
         if ($params["pathCurl"]=="") {
