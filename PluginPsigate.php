@@ -83,11 +83,6 @@ class PluginPsigate extends GatewayPlugin
                                         "description"   =>lang("No description"),
                                         "value"         =>"1"
                                         ),
-                   lang("30 Day Billing") => array (
-                                        "type"          =>"hidden",
-                                        "description"   =>lang("Select YES if you want ClientExec to treat monthly billing by 30 day intervals.  If you select NO then the same day will be used to determine intervals."),
-                                        "value"         =>"0"
-                                       ),
                    lang("Check CVV2") => array (
                                         "type"          =>"hidden",
                                         "description"   =>lang("Select YES if you want to accept CVV2 for this plugin."),
@@ -100,12 +95,12 @@ class PluginPsigate extends GatewayPlugin
     /*****************************************************************/
     // function plugin_psigate_singlepayment($params) - required function
     /*****************************************************************/
-    function singlepayment($params) {
+    function singlepayment($params)
+    {
         //Function needs to build the url to the payment processor
         //Plugin variables can be accesses via $params["plugin_[pluginname]_[variable]"] (ex. $params["plugin_paypal_UserID"])
 
         return $this->autopayment($params);
-
     }
 
     /**********************************************************************************/
@@ -124,17 +119,10 @@ class PluginPsigate extends GatewayPlugin
         $ip = CE_Lib::getRemoteAddr();
         $host = @gethostbyaddr($ip);
 
-        if ($params["plugin_psigate_Demo Mode"]==0){
+        if ($params["plugin_psigate_Demo Mode"]==0) {
             $psi->setGatewayURL('https://secure.psigate.com:27934/Messenger/XMLMessenger');
         } else {
             $psi->setGatewayURL('https://dev.psigate.com:27934/Messenger/XMLMessenger');
-        }
-
-        if ($params["pathCurl"]=="") {
-            $psi->setUseLibCurl();
-        }else{
-            //absolute path to Curl on your system, not using libCurl
-            $psi->setUseLibCurl(false,$params['pathCurl']);
         }
 
         $psi->setStoreID($params["plugin_psigate_Store Name"]);
@@ -144,8 +132,8 @@ class PluginPsigate extends GatewayPlugin
         $psi->setCardAction('0'); // 1 for Authorize, 0 for Immediate Charge
         $psi->setSubTotal(sprintf("%01.2f", round($params["invoiceTotal"], 2))); // Amount
         $psi->setCardNumber($params["userCCNumber"]); // Card Number
-        $psi->setCardExpMonth(mb_substr($params["userCCExp"],0,2)); // Month in 2-digit format
-        $psi->setCardExpYear(mb_substr($params["userCCExp"],strpos($params["userCCExp"],"/")+3));
+        $psi->setCardExpMonth(mb_substr($params["userCCExp"], 0, 2)); // Month in 2-digit format
+        $psi->setCardExpYear(mb_substr($params["userCCExp"], strpos($params["userCCExp"], "/")+3));
         $psi->setCardIDNumber($params["userCCCVV2"]);
         $psi->setUserID($params['userID']); // Unique customer identifier set by merchant.
         $psi->setBname($params['userFirstName']." ".$params['userLastName']); // Billing Name
@@ -162,24 +150,27 @@ class PluginPsigate extends GatewayPlugin
 
         // doPayment is not safe for used with E_NOTICE
         $errorReporting = error_reporting();
-        error_reporting(E_ALL & ~E_NOTICE);
+        error_reporting(0);
 
         // Send transaction data to the gateway
         $psi->doPayment();
 
         error_reporting($errorReporting);
 
-        if ($params['isSignup']==1){
+        if ($params['isSignup']==1) {
             $bolInSignup = true;
-        }else{
+        } else {
             $bolInSignup = false;
         }
         include 'plugins/gateways/psigate/callback.php';
 
         //Return error code
         $tReturnValue = "";
-        if ($psi->getTrxnApproved() == 'APPROVED'){ $tReturnValue = ""; }
-        else { $tReturnValue = $psi->getTrxnApproved()." Error: ".$psi->getErrorMessage();}
+        if ($psi->getTrxnApproved() == 'APPROVED') {
+            $tReturnValue = "";
+        } else {
+            $tReturnValue = $psi->getTrxnApproved()." Error: ".$psi->getErrorMessage();
+        }
         return $tReturnValue;
     }
 
@@ -196,17 +187,10 @@ class PluginPsigate extends GatewayPlugin
         $ip = CE_Lib::getRemoteAddr();
         $host = @gethostbyaddr($ip);
 
-        if ($params["plugin_psigate_Demo Mode"]==0){
+        if ($params["plugin_psigate_Demo Mode"]==0) {
             $psi->setGatewayURL('https://secure.psigate.com:27934/Messenger/XMLMessenger');
         } else {
             $psi->setGatewayURL('https://dev.psigate.com:27934/Messenger/XMLMessenger');
-        }
-
-        if ($params["pathCurl"]=="") {
-            $psi->setUseLibCurl();
-        }else{
-            //absolute path to Curl on your system, not using libCurl
-            $psi->setUseLibCurl(false,$params['pathCurl']);
         }
 
         $psi->setStoreID($params["plugin_psigate_Store Name"]);
@@ -221,8 +205,8 @@ class PluginPsigate extends GatewayPlugin
         $psi->setCardAction('9'); // 1 for Authorize, 0 for Immediate Charge, 9 for void, 3 for credit
         $psi->setSubTotal(sprintf("%01.2f", round($params["invoiceTotal"], 2))); // Amount
         $psi->setCardNumber($params["userCCNumber"]); // Card Number
-        $psi->setCardExpMonth(mb_substr($params["userCCExp"],0,2)); // Month in 2-digit format
-        $psi->setCardExpYear(mb_substr($params["userCCExp"],strpos($params["userCCExp"],"/")+3));
+        $psi->setCardExpMonth(mb_substr($params["userCCExp"], 0, 2)); // Month in 2-digit format
+        $psi->setCardExpYear(mb_substr($params["userCCExp"], strpos($params["userCCExp"], "/")+3));
         $psi->setUserID($params['userID']); // Unique customer identifier set by merchant.
         $psi->setBname($params['userFirstName']." ".$params['userLastName']); // Billing Name
         $psi->setBcompany($params["userOrganization"]); // Company Name
@@ -238,7 +222,7 @@ class PluginPsigate extends GatewayPlugin
 
         // doPayment is not safe for used with E_NOTICE
         $errorReporting = error_reporting();
-        error_reporting(E_ALL & ~E_NOTICE);
+        error_reporting(0);
 
         // Send transaction data to the gateway
         $psi->doPayment();
@@ -252,20 +236,19 @@ class PluginPsigate extends GatewayPlugin
 
         error_reporting($errorReporting);
 
-        if ($params['isSignup']==1){
+        if ($params['isSignup']==1) {
             $bolInSignup = true;
-        }else{
+        } else {
             $bolInSignup = false;
         }
         include 'plugins/gateways/psigate/callback.php';
 
         //Return error code
 
-        if($psi->getTrxnApproved() == 'APPROVED'){
+        if ($psi->getTrxnApproved() == 'APPROVED') {
             return array('AMOUNT' => $psi->getTrxnSubTotal());
-        }else{
+        } else {
             return $psi->getTrxnApproved()." Error: ".$psi->getErrorMessage();
         }
     }
 }
-?>

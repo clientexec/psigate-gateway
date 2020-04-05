@@ -68,12 +68,6 @@ class PsiGatePayment {
     var $myEmail;
     var $myComments;
     var $myCustomerIP;
-
-    // Added by Mike Mallinson - April 10, 2006
-    var $useLibCurl = true;
-    var $pathToCurl = "";
-    // End addition by Mike Mallinson - April 10, 2006
-
     var $myResultTrxnTransTime;
     var $myResultTrxnOrderID;
     var $myResultTrxnApproved;
@@ -288,12 +282,6 @@ class PsiGatePayment {
     function setCustomerIP( $CustomerIP) {
     	$this->myCustomerIP = $CustomerIP;
     }
-    // Added by Mike Mallinson - April 10, 2006
-    function setUseLibCurl($useLibCurl=true, $pathToCurl="") {
-        $this->useLibCurl = $useLibCurl;
-        $this->pathToCurl = $pathToCurl;
-    }
-    // End addition by Mike Mallinson - April 10, 2006
 
     /***********************************************************************
      *** GET values returned by PsiGate                                  ***
@@ -423,7 +411,7 @@ class PsiGatePayment {
      *** Class Constructor                                               ***
      ***********************************************************************/
 
-    function PsiGatePayment() {
+    function __construct() {
     }
 
     /***********************************************************************
@@ -481,33 +469,27 @@ class PsiGatePayment {
         "</Order>";
 
         $xmlResponse = "";
-        // Added ability to use command line curl - Mike Mallinson
-        if ($this->useLibCurl) {
-            /* Use CURL to execute XML POST and write output into a string */
-            $ch = curl_init( $this->myGatewayURL );
-            curl_setopt( $ch, CURLOPT_POST, 1 );
-            curl_setopt( $ch, CURLOPT_POSTFIELDS, $xmlRequest );
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-            curl_setopt( $ch, CURLOPT_TIMEOUT, 5 );
-            curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 0 );
-            curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
-            //curl_setopt($ch, CURLOPT_SSLVERSION, 6);
-            //curl_setopt($ch, CURLOPT_SSL_CIPHER_LIST, 'TLSv1');
-            $xmlResponse = curl_exec( $ch );
 
-            // Check whether the curl_exec worked.
-            if( curl_errno( $ch ) != CURLE_OK ) {
-                // A CURL Error occured. Return the error message and number. (offset so we can pick the error apart)
-                $this->myError = curl_errno( $ch ) + PSIGATE_CURL_ERROR_OFFSET;
-                $this->myErrorMessage = curl_error( $ch );
-            }
-            // Clean up CURL, and return any error.
-            curl_close( $ch );
-        } elseif ($this->pathToCurl != "") {
-            // execute curl via the command line
-            exec("$this->pathToCurl -d \"$xmlRequest\" $this->myGatewayURL", $xmlResponse);
-            $xmlResponse = $xmlResponse[0];
+        /* Use CURL to execute XML POST and write output into a string */
+        $ch = curl_init( $this->myGatewayURL );
+        curl_setopt( $ch, CURLOPT_POST, 1 );
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $xmlRequest );
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+        curl_setopt( $ch, CURLOPT_TIMEOUT, 5 );
+        curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 0 );
+        curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
+        //curl_setopt($ch, CURLOPT_SSLVERSION, 6);
+        //curl_setopt($ch, CURLOPT_SSL_CIPHER_LIST, 'TLSv1');
+        $xmlResponse = curl_exec( $ch );
+
+        // Check whether the curl_exec worked.
+        if( curl_errno( $ch ) != CURLE_OK ) {
+            // A CURL Error occured. Return the error message and number. (offset so we can pick the error apart)
+            $this->myError = curl_errno( $ch ) + PSIGATE_CURL_ERROR_OFFSET;
+            $this->myErrorMessage = curl_error( $ch );
         }
+        // Clean up CURL, and return any error.
+        curl_close( $ch );
 
         if (!$this->myError) {
             // It worked, so setup an XML parser for the result.
